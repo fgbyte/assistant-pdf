@@ -28,6 +28,9 @@ const ChatInterface = ({
 						<span className="text-sm text-muted-foreground">
 							Current Document: {currentDocument.filename}
 						</span>
+						<span className="text-sm text-muted-foreground text-green-500">
+							{(currentDocument.fileSize / (1024 * 1024)).toFixed(2)} MB
+						</span>
 					</div>
 					{messages.length > 0 && (
 						<Button className="text-muted-foreground hover:text-destructive">

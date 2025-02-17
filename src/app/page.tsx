@@ -58,6 +58,12 @@ export default function Home() {
 		maxSize: 10 * 1024 * 1024, // 10 MB
 	});
 
+	const handleMessage = async (message: string, documentId: string) => {
+		console.log("handleMessage:", message, documentId);
+		return "Hello";
+	};
+
+	//clear DB function
 	const handleClick = async () => {
 		try {
 			const response = await fetch("/api/empty-db", {
@@ -74,10 +80,6 @@ export default function Home() {
 		}
 	};
 
-	const handleMessage = async (message: string, documentId: string) => {
-		console.log("handleMessage:", message, documentId);
-		return "Hello";
-	};
 	return (
 		<div className="container mx-auto p-4">
 			<div className="flex justify-between items-center mb-8">

@@ -76,7 +76,7 @@ export async function POST(req: Request) {
 			},
 			{
 				role: "user",
-				content: `Summarize the following research paper extract, preserving key insights and findings. Keep it informative and concise:\n\n"""${documentText}"""`,
+				content: `Summarize the following research paper extract, preserving key insights and findings. Keep it informative and concise, no more than 100 words:\n\n"""${documentText}"""`,
 			},
 		]);
 
