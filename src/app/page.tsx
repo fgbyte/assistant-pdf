@@ -1,6 +1,9 @@
 "use client";
 
+import ChatInterface from "@/components/ChatInterface";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import type { DocumentMetadata } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -10,6 +13,8 @@ export default function Home() {
 	const [uploadProgress, setUploadProgress] = useState(false);
 	const [error, setError] = useState<string>("");
 	const [summary, setSummary] = useState<string>("");
+	const [documents, setDocuments] = useState<DocumentMetadata[]>([]);
+	const [currentDocument, setCurrentDocument] = useState<DocumentMetadata>();
 
 	const onDrop = useCallback(async (acceptedFiles: File[]) => {
 		try {
@@ -29,6 +34,17 @@ export default function Home() {
 
 			const data = await response.json();
 			setSummary(data.summary);
+
+			const newDoc: DocumentMetadata = {
+				id: data.documentId,
+				filename: acceptedFiles[0].name,
+				uploadedAt: new Date(),
+				summary: data.summary,
+				pageCount: data.pageCount,
+				fileSize: acceptedFiles[0].size,
+			};
+			setDocuments((prev) => [...prev, newDoc]);
+			setCurrentDocument(newDoc);
 		} catch (error) {
 			setError(error instanceof Error ? error.message : "Unknown error");
 		} finally {
@@ -56,6 +72,11 @@ export default function Home() {
 			console.error("Error:", error);
 			alert("An error occurred while trying to delete vectors.");
 		}
+	};
+
+	const handleMessage = async (message: string, documentId: string) => {
+		console.log("handleMessage:", message, documentId);
+		return "Hello";
 	};
 	return (
 		<div className="container mx-auto p-4">
@@ -95,15 +116,15 @@ export default function Home() {
 							</p>
 						</Card>
 					)}
+
+					<ChatInterface
+						onSendMessage={handleMessage}
+						loading={loading}
+						currentDocument={currentDocument}
+					/>
 				</div>
 			</div>
-			<button
-				type="button"
-				className="px-6 py-4 bg-black text-white rounded-lg"
-				onClick={handleClick}
-			>
-				Clear Database
-			</button>
+			<Button onClick={handleClick}>Clear Database</Button>
 		</div>
 	);
 }
