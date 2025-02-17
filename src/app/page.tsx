@@ -41,6 +41,22 @@ export default function Home() {
 		accept: { "application/pdf": [".pdf"] },
 		maxSize: 10 * 1024 * 1024, // 10 MB
 	});
+
+	const handleClick = async () => {
+		try {
+			const response = await fetch("/api/empty-db", {
+				method: "POST", // Preferably use POST for actions that modify state
+			});
+			if (response.ok) {
+				alert("All vectors have been deleted.");
+			} else {
+				alert("Failed to delete vectors.");
+			}
+		} catch (error) {
+			console.error("Error:", error);
+			alert("An error occurred while trying to delete vectors.");
+		}
+	};
 	return (
 		<div className="container mx-auto p-4">
 			<div className="flex justify-between items-center mb-8">
@@ -72,7 +88,7 @@ export default function Home() {
 					)}
 
 					{summary && (
-						<Card>
+						<Card className="p-6 mb-8">
 							<h2 className="text-2xl font-semibold mb-4">Document Summary</h2>
 							<p className="text-gray-700 dark:text-gray-300 leading-relaxed">
 								{summary}
@@ -81,6 +97,13 @@ export default function Home() {
 					)}
 				</div>
 			</div>
+			<button
+				type="button"
+				className="px-6 py-4 bg-black text-white rounded-lg"
+				onClick={handleClick}
+			>
+				Clear Database
+			</button>
 		</div>
 	);
 }

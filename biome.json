@@ -13,6 +13,9 @@
 			},
 			"a11y": {
 				"useButtonType": "warn"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
 			}
 		}
 	},
