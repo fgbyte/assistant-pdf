@@ -61,7 +61,10 @@ const ChatInterface = ({
 						</span>
 					</div>
 					{messages.length > 0 && (
-						<Button className="text-muted-foreground hover:text-destructive">
+						<Button
+							variant={"ghost"}
+							className="text-muted-foreground hover:text-destructive"
+						>
 							Clear History
 						</Button>
 					)}
@@ -75,10 +78,27 @@ const ChatInterface = ({
 			<ScrollArea className="flex-1 p-4">
 				<div className="space-y-4">
 					{messages.map((message) => (
-						<div key={message.id}>
-							<div>
-								<p>{message.content}</p>
-								<div>{new Date(message.timestamp).toLocaleTimeString()}</div>
+						<div
+							key={message.id}
+							className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+						>
+							<div
+								className={`max-w-[80%] rounded-lg p-3 ${
+									message.role === "user"
+										? "bg-primary text-primary-foreground"
+										: "bg-muted text-muted-foreground"
+								}`}
+							>
+								<p className="whitespace-pre-wrap">{message.content}</p>
+								<div
+									className={`test-xs mt-1 ${
+										message.role === "user"
+											? "text-primary-foreground/70"
+											: "text-muted-foreground/70"
+									}`}
+								>
+									{new Date(message.timestamp).toLocaleTimeString()}
+								</div>
 							</div>
 						</div>
 					))}
