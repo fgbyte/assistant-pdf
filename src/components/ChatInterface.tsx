@@ -1,8 +1,10 @@
 import type { ChatMessage, DocumentMetadata } from "@/lib/types";
-import { FileText } from "lucide-react";
+import { FileText, Loader2, Send } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
 
 type ChatInterfaceProps = {
 	onSendMessage: (message: string, documentId: string) => Promise<string>;
@@ -16,8 +18,34 @@ const ChatInterface = ({
 	currentDocument,
 }: ChatInterfaceProps) => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
-	const [input, setinput] = useState<string>("");
+	const [input, setInput] = useState<string>("");
 	const scrillRef = useRef<HTMLDivElement>(null);
+
+	const handleSend = async () => {
+		if (!input.trim() || loading || !currentDocument) return;
+
+		const userMessage: ChatMessage = {
+			id: crypto.randomUUID(),
+			role: "user",
+			content: input,
+			timestamp: new Date(),
+			documentId: currentDocument.id,
+		};
+		setMessages((prev) => [...prev, userMessage]);
+		setInput("");
+
+		//Get AI response
+		const aiResponse = await onSendMessage(input, currentDocument.id);
+
+		const aiMessage: ChatMessage = {
+			id: crypto.randomUUID(),
+			role: "assistant",
+			content: aiResponse,
+			timestamp: new Date(),
+			documentId: currentDocument.id,
+		};
+		setMessages((prev) => [...prev, aiMessage]);
+	};
 
 	return (
 		<Card className="h-[500px] flex flex-col">
@@ -43,6 +71,38 @@ const ChatInterface = ({
 					Pelase select or upload a document first.
 				</div>
 			)}
+
+			<ScrollArea className="flex-1 p-4">
+				<div className="space-y-4">
+					{messages.map((message) => (
+						<div key={message.id}>
+							<div>
+								<p>{message.content}</p>
+								<div>{new Date(message.timestamp).toLocaleTimeString()}</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</ScrollArea>
+
+			<div className="p-4 border-t">
+				<div className="flex gap-2">
+					<Input
+						value={input}
+						onChange={(e) => setInput(e.target.value)}
+						onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+						placeholder={
+							currentDocument
+								? "Type a message..."
+								: "Please select or upload a document first."
+						}
+						disabled={loading || !currentDocument}
+					/>
+					<Button onClick={handleSend} disabled={loading || !currentDocument}>
+						{loading ? <Loader2 className="animate-spin" /> : <Send />}
+					</Button>
+				</div>
+			</div>
 		</Card>
 	);
 };

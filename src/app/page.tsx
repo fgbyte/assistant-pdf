@@ -51,19 +51,43 @@ export default function Home() {
 			setUploadProgress(false);
 		}
 	}, []);
+	//onDrop is memoized, and waiting for be called in useDropzone
 
+	//https://react-dropzone.js.org/
+	const MB = 1024 * 1024;
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
-		onDrop,
+		onDrop, //call onDrop when files are dropped
 		accept: { "application/pdf": [".pdf"] },
-		maxSize: 10 * 1024 * 1024, // 10 MB
+		maxSize: 100 * MB, // 100 MB
 	});
 
 	const handleMessage = async (message: string, documentId: string) => {
-		console.log("handleMessage:", message, documentId);
-		return "Hello";
+		try {
+			setLoading(true);
+			const response = await fetch("/api/question", {
+				method: "POST",
+				body: JSON.stringify({
+					question: message,
+					documentId,
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to send question");
+			}
+
+			const data = await response.json();
+			return data.answer;
+		} catch (error) {
+			setError(
+				error instanceof Error ? error.message : "An unknown error occurred",
+			);
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	//clear DB function
+	//Clear DB function (only for development)
 	const handleClick = async () => {
 		try {
 			const response = await fetch("/api/empty-db", {
@@ -90,7 +114,7 @@ export default function Home() {
 				<div className="md:col-span-2">
 					<Card className="p-6 mb-8">
 						<div
-							{...getRootProps()}
+							{...getRootProps()} //made this div a functional dropzone
 							className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-blue-500" : "border-gray-300 dark:border-gray-700"}`}
 						>
 							<input {...getInputProps()} />

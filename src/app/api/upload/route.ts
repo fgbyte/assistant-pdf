@@ -8,7 +8,7 @@
 
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { ChatOpenAI } from "@langchain/openai";
-import { OpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
 		});
 
 		const documentText = splitDocs[0].pageContent;
-		console.log(documentText);
+		// console.log(documentText);
 
 		const response = await openai.invoke([
 			{
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
 		const summary = response.content;
 
-		console.log(summary);
+		// console.log(summary);
 
 		// Store in Pinecone with metadata
 		const embeddings = new OpenAIEmbeddings({
