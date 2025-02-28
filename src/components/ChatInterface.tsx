@@ -1,6 +1,6 @@
 import type { ChatMessage, DocumentMetadata } from "@/lib/types";
 import { FileText, Loader2, Send } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -12,6 +12,17 @@ type ChatInterfaceProps = {
 	currentDocument?: DocumentMetadata;
 };
 
+//Helper function to save chat history to local storage
+const saveChatHistory = (documentId: string, history: ChatMessage[]) => {
+	localStorage.setItem(`chatHistory-${documentId}`, JSON.stringify(history));
+};
+
+//Helper function to load chat history from local storage
+const getChatHistory = (documentId: string): ChatMessage[] => {
+	const history = localStorage.getItem(`chatHistory-${documentId}`);
+	return history ? JSON.parse(history) : [];
+};
+
 const ChatInterface = ({
 	onSendMessage,
 	loading,
@@ -19,7 +30,30 @@ const ChatInterface = ({
 }: ChatInterfaceProps) => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [input, setInput] = useState<string>("");
-	const scrillRef = useRef<HTMLDivElement>(null);
+	const scrollRef = useRef<HTMLDivElement>(null);
+
+	//Load chat history from local storage
+	useEffect(() => {
+		if (currentDocument?.id) {
+			const history = getChatHistory(currentDocument.id);
+			setMessages(history);
+		}
+	}, [currentDocument]);
+
+	//Save chat history to local storage
+	useEffect(() => {
+		if (currentDocument?.id) {
+			saveChatHistory(currentDocument.id, messages);
+		}
+	}, [messages, currentDocument]);
+
+	//Scroll to bottom when new message is added
+	//FIXME: Doesn't works
+	useEffect(() => {
+		if (scrollRef.current) {
+			scrollRef.current.scrollIntoView({ behavior: "smooth" });
+		}
+	}, []);
 
 	const handleSend = async () => {
 		if (!input.trim() || loading || !currentDocument) return;
@@ -47,6 +81,13 @@ const ChatInterface = ({
 		setMessages((prev) => [...prev, aiMessage]);
 	};
 
+	const clearHistory = () => {
+		if (currentDocument?.id) {
+			localStorage.removeItem(`chatHistory-${currentDocument.id}`);
+			setMessages([]);
+		}
+	};
+
 	return (
 		<Card className="h-[500px] flex flex-col">
 			{currentDocument ? (
@@ -64,6 +105,7 @@ const ChatInterface = ({
 						<Button
 							variant={"ghost"}
 							className="text-muted-foreground hover:text-destructive"
+							onClick={clearHistory}
 						>
 							Clear History
 						</Button>

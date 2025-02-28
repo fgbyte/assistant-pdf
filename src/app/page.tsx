@@ -1,6 +1,7 @@
 "use client";
 
 import ChatInterface from "@/components/ChatInterface";
+import { DocumentHistory } from "@/components/DocumentHistory";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { DocumentMetadata } from "@/lib/types";
@@ -104,6 +105,13 @@ export default function Home() {
 		}
 	};
 
+	const handleDocumentSelect = (documentId: string) => {
+		const doc = documents.find((d) => d.id === documentId);
+		if (doc) {
+			setCurrentDocument(doc);
+		}
+	};
+
 	return (
 		<div className="container mx-auto p-4">
 			<div className="flex justify-between items-center mb-8">
@@ -147,6 +155,14 @@ export default function Home() {
 						onSendMessage={handleMessage}
 						loading={loading}
 						currentDocument={currentDocument}
+					/>
+				</div>
+
+				<div className="md:sticky md:top-4 h-fit">
+					<DocumentHistory
+						documents={documents}
+						onSelect={handleDocumentSelect}
+						currentId={currentDocument?.id}
 					/>
 				</div>
 			</div>

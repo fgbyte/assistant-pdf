@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 		const openai = new ChatOpenAI({
 			openAIApiKey: process.env.OPENAI_API_KEY,
 			modelName: "gpt-4o-mini",
-			temperature: 0.7,
+			temperature: 0.3,
 		});
 
 		const prompt = `You are a helpful AI assistant. Using the following context from a document, please answer the user's question accurately and concisely. If the context doesn't contain relevant information to answer the question, please say so.
