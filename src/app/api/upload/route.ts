@@ -7,6 +7,7 @@
 // 6. Generate a summary of the document
 
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
@@ -59,16 +60,21 @@ export async function POST(req: Request) {
 		}));
 
 		//** Generate summary **//
-		const openai = new ChatOpenAI({
-			openAIApiKey: process.env.OPENAI_API_KEY,
-			modelName: "gpt-4o-mini",
-			temperature: 0.7,
+		// const openai = new ChatOpenAI({
+		// 	openAIApiKey: process.env.OPENAI_API_KEY,
+		// 	modelName: "gpt-4o-mini",
+		// 	temperature: 0.7,
+		// });
+		const genai = new ChatGoogleGenerativeAI({
+			apiKey: process.env.GOOGLE_API_KEY,
+			model: "gemini-2.0-flash",
+			temperature: 0.3,
 		});
 
 		const documentText = splitDocs[0].pageContent;
 		// console.log(documentText);
 
-		const response = await openai.invoke([
+		const response = await genai.invoke([
 			{
 				role: "system",
 				content:

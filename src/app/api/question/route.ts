@@ -1,5 +1,6 @@
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { ChatOpenAI } from "@langchain/openai";
+// import { ChatOpenAI } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { NextResponse } from "next/server";
@@ -37,9 +38,15 @@ export async function POST(req: Request) {
 
 		const contentText = results.map((r) => r.pageContent).join("\n\n");
 
-		const openai = new ChatOpenAI({
-			openAIApiKey: process.env.OPENAI_API_KEY,
-			modelName: "gpt-4o-mini",
+		// const openai = new ChatOpenAI({
+		// 	openAIApiKey: process.env.OPENAI_API_KEY,
+		// 	modelName: "gpt-4o-mini",
+		// 	temperature: 0.3,
+		// });
+
+		const genai = new ChatGoogleGenerativeAI({
+			apiKey: process.env.GOOGLE_API_KEY,
+			model: "gemini-2.0-flash",
 			temperature: 0.3,
 		});
 
@@ -53,7 +60,7 @@ export async function POST(req: Request) {
         Answer:
         `;
 
-		const response = await openai.invoke(prompt);
+		const response = await genai.invoke(prompt);
 		const answerText =
 			response.content || "An unexpected response was received.";
 
