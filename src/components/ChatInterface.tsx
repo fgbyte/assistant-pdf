@@ -45,15 +45,16 @@ const ChatInterface = ({
 		if (currentDocument?.id) {
 			saveChatHistory(currentDocument.id, messages);
 		}
-	}, [messages, currentDocument]);
 
-	//Scroll to bottom when new message is added
-	//FIXME: Doesn't works
-	useEffect(() => {
-		if (scrollRef.current) {
-			scrollRef.current.scrollIntoView({ behavior: "smooth" });
-		}
-	}, []);
+		//Scroll bottom function
+		const scrollToBottom = () => {
+			if (scrollRef.current) {
+				scrollRef.current.scrollIntoView({ behavior: "smooth" });
+			}
+		};
+
+		scrollToBottom();
+	}, [messages, currentDocument?.id]);
 
 	const handleSend = async () => {
 		if (!input.trim() || loading || !currentDocument) return;
@@ -91,7 +92,7 @@ const ChatInterface = ({
 	return (
 		<Card className="h-[500px] flex flex-col">
 			{currentDocument ? (
-				<div className="p-3 border-b flex itemx-center justify-between bg-muted/50">
+				<div className="p-3 border-b flex items-center justify-between bg-muted/50">
 					<div className="flex items-center gap-2">
 						<FileText className="size-4 text-muted-foreground" />
 						<span className="text-sm text-muted-foreground">
@@ -144,6 +145,7 @@ const ChatInterface = ({
 							</div>
 						</div>
 					))}
+					<div ref={scrollRef} />
 				</div>
 			</ScrollArea>
 
