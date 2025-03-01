@@ -2,6 +2,7 @@
 
 import ChatInterface from "@/components/ChatInterface";
 import { DocumentHistory } from "@/components/DocumentHistory";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { DocumentMetadata } from "@/lib/types";
@@ -116,7 +117,9 @@ export default function Home() {
 		<div className="container mx-auto p-4">
 			<div className="flex justify-between items-center mb-8">
 				<h1 className="text-3xl font-bold">AI PDF Assistant</h1>
-				<div>{/* TODO: Add theme toggle */}</div>
+				<div>
+					<ThemeToggle />
+				</div>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 				<div className="md:col-span-2">
